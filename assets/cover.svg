@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">MRP 物料需求计划系统</title>
+  <desc id="desc">按低层码逐层展开毛需求、净需求与计划订单：Struts2 与 Hibernate 的物料需求计划系统。</desc>
+  <defs>
+    <pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity=".045"/></pattern>
+    <style>
+      text{font-family:"Segoe UI","Microsoft YaHei","Noto Sans CJK SC",sans-serif}
+      .mono{font-family:"Cascadia Code",Consolas,monospace}
+    </style>
+  </defs>
+  <rect width="1200" height="640" rx="20" fill="#151320"/>
+  <rect width="1200" height="640" rx="20" fill="url(#g)"/>
+  <g transform="translate(56 44)">
+    <rect width="36" height="36" rx="8" fill="#b9a6e3"/>
+    <g fill="#151320"><circle cx="18" cy="11" r="3.2"/><circle cx="11" cy="25" r="3.2"/><circle cx="25" cy="25" r="3.2"/></g>
+    <path d="M18 14.5v3.5M18 18l-6 4M18 18l6 4" fill="none" stroke="#151320" stroke-width="2.2" stroke-linecap="round"/>
+    <text x="50" y="24" class="mono" fill="#efeaf8" font-size="17" letter-spacing="2">MRP / SYSTEM</text>
+  </g>
+  <text x="1144" y="68" text-anchor="end" class="mono" fill="#9a93ab" font-size="13" letter-spacing="1.5">ITEM / BOM / INVENTORY / TPOP</text>
+  <text x="56" y="196" fill="#f0edf6" font-size="58" font-weight="700" letter-spacing="-1">MRP 物料需求计划系统<tspan fill="#b9a6e3">。</tspan></text>
+  <text x="59" y="242" class="mono" fill="#b9a6e3" font-size="22" letter-spacing="1">Material Requirements Planning</text>
+  <text x="59" y="292" fill="#aaa4b8" font-size="19">按低层码逐层展开：毛需求、净需求与计划订单</text>
+  <text x="59" y="364" class="mono" fill="#9a93ab" font-size="12" letter-spacing="2">BOM 结构</text>
+  <text x="430" y="364" class="mono" fill="#9a93ab" font-size="12" letter-spacing="2">逐层计算</text>
+  <g fill="#221d33" stroke="#4a4160">
+    <rect x="178" y="382" width="64" height="42" rx="8"/>
+    <rect x="98" y="462" width="64" height="42" rx="8"/>
+    <rect x="258" y="462" width="64" height="42" rx="8"/>
+    <rect x="98" y="542" width="64" height="42" rx="8" stroke="#b9a6e3"/>
+  </g>
+  <g fill="none" stroke="#5c5473" stroke-width="1.5">
+    <path d="M210 424v18M130 442h160M130 442v20M290 442v20M130 504v38"/>
+  </g>
+  <g class="mono" fill="#efeaf8" font-size="19" text-anchor="middle">
+    <text x="210" y="409">A</text>
+    <text x="130" y="489">B</text>
+    <text x="290" y="489">C</text>
+    <text x="130" y="569">D</text>
+  </g>
+  <g class="mono" fill="#9a93ab" font-size="10.5">
+    <text x="250" y="404">LLC 0</text>
+    <text x="170" y="484">LLC 1</text>
+    <text x="330" y="484">LLC 1</text>
+    <text x="170" y="564">LLC 2</text>
+  </g>
+  <g fill="#221d33" stroke="#4a4160">
+    <rect x="430" y="420" width="155" height="76" rx="10"/>
+    <rect x="615" y="420" width="155" height="76" rx="10"/>
+    <rect x="800" y="420" width="155" height="76" rx="10"/>
+    <rect x="985" y="420" width="155" height="76" rx="10"/>
+  </g>
+  <g fill="#efeaf8" font-size="17" text-anchor="middle">
+    <text x="507" y="452">毛需求</text>
+    <text x="692" y="452">净需求</text>
+    <text x="877" y="452">计划订单</text>
+    <text x="1062" y="452">需求时间</text>
+  </g>
+  <g class="mono" fill="#9a93ab" font-size="10.5" text-anchor="middle">
+    <text x="507" y="478">TPOP + BOM 展开</text>
+    <text x="692" y="478">减库存与在途</text>
+    <text x="877" y="478">批量规则</text>
+    <text x="1062" y="478">按提前期倒排</text>
+  </g>
+  <g fill="none" stroke="#b9a6e3" stroke-opacity=".75" stroke-width="1.6">
+    <path d="M589 458h22m-5-4 5 4-5 4"/>
+    <path d="M774 458h22m-5-4 5 4-5 4"/>
+    <path d="M959 458h22m-5-4 5 4-5 4"/>
+  </g>
+  <text x="56" y="612" class="mono" fill="#9a93ab" font-size="11" letter-spacing="1.2">JAVA 8 / STRUTS2 / HIBERNATE / MYSQL</text>
+  <text x="1144" y="612" text-anchor="end" fill="#aaa4b8" font-size="12">GitHub Actions：编译、单元测试与打包。</text>
+</svg>
