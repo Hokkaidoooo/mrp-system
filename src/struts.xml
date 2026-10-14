@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+
+    <package name="mrp" extends="struts-default" namespace="/">
+        <action name="BOM_*" class="action.BOMAction" method="{1}">
+            <result name="success">BOM.jsp</result>
+            <result name="alreadyhave">BOMAlreadyExits.jsp</result>
+        </action>
+        <action name="ItemMaster_*" class="action.ItemMasterAction" method="{1}">
+            <result name="success">ItemMaster.jsp</result>
+            <result name="alreadyhave">ItemMasterAlreadyExits.jsp</result>
+        </action>
+        <action name="Inventory_*" class="action.InventoryAction" method="{1}">
+            <result name="success">Inventory.jsp</result>
+            <result name="alreadyhave">InventoryAlreadyExits.jsp</result>
+        </action>
+        <action name="TPOP_*" class="action.TPOPAction" method="{1}">
+            <result name="success">TPOP.jsp</result>
+            <result name="error" type="redirectAction">TPOP_errorlist</result>
+            <result name="errorlist">TPOPError.jsp</result>
+        </action>
+        <action name="MRP_*" class="action.MRPAction" method="{1}">
+            <result name="success">MRP.jsp</result>
+        </action>
+    </package>
+</struts>

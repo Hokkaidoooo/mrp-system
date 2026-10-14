@@ -1,0 +1,16 @@
+# Set these values as environment variables before starting Tomcat.
+MRP_DB_URL=jdbc:mysql://localhost:3306/MRP?useUnicode=true&characterEncoding=UTF-8
+MRP_DB_USERNAME=mrp_user
+MRP_DB_PASSWORD=change-me
+
+# Optional overrides:
+# MRP_DB_DRIVER=com.mysql.jdbc.Driver
+# MRP_DB_DIALECT=org.hibernate.dialect.MySQL5Dialect
+# MRP_HBM2DDL_AUTO=validate
+# MRP_HIBERNATE_SHOW_SQL=false
+# MRP_HIBERNATE_FORMAT_SQL=false
+
+# JVM system property equivalents:
+# -Dmrp.db.url=jdbc:mysql://localhost:3306/MRP?useUnicode=true&characterEncoding=UTF-8
+# -Dmrp.db.username=mrp_user
+# -Dmrp.db.password=change-me

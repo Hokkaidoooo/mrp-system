@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="entity.MRP" table="t_mrp">
+        <id name="id" column="id">
+            <!--设置数据库表id增长
+            native生成表id值就是主键自动增长
+            -->
+            <generator class="native"></generator>
+        </id>
+        <!--配置其他属性对应关系-->
+        <property name="P_No" column="P_No"></property>
+        <property name="LT" column="LT"></property>
+        <property name="ST" column="ST"></property>
+        <property name="SS" column="SS"></property>
+        <property name="OH" column="OH"></property>
+        <property name="LSR" column="LSR"></property>
+        <property name="LS" column="LS"></property>
+        <property name="AL" column="AL"></property>
+
+        <property name="GR0" column="GR0"></property>
+        <property name="GR1" column="GR1"></property>
+        <property name="GR2" column="GR2"></property>
+        <property name="GR3" column="GR3"></property>
+        <property name="GR4" column="GR4"></property>
+        <property name="GR5" column="GR5"></property>
+        <property name="GR6" column="GR6"></property>
+        <property name="GR7" column="GR7"></property>
+        <property name="GR8" column="GR8"></property>
+        <property name="GR9" column="GR9"></property>
+        <property name="GR10" column="GR10"></property>
+        <property name="GR11" column="GR11"></property>
+        <property name="GR12" column="GR12"></property>
+
+        <property name="SR0" column="SR0"></property>
+        <property name="SR1" column="SR1"></property>
+        <property name="SR2" column="SR2"></property>
+        <property name="SR3" column="SR3"></property>
+        <property name="SR4" column="SR4"></property>
+        <property name="SR5" column="SR5"></property>
+        <property name="SR6" column="SR6"></property>
+        <property name="SR7" column="SR7"></property>
+        <property name="SR8" column="SR8"></property>
+        <property name="SR9" column="SR9"></property>
+        <property name="SR10" column="SR10"></property>
+        <property name="SR11" column="SR11"></property>
+        <property name="SR12" column="SR12"></property>
+
+        <property name="POH0" column="POH0"></property>
+        <property name="POH1" column="POH1"></property>
+        <property name="POH2" column="POH2"></property>
+        <property name="POH3" column="POH3"></property>
+        <property name="POH4" column="POH4"></property>
+        <property name="POH5" column="POH5"></property>
+        <property name="POH6" column="POH6"></property>
+        <property name="POH7" column="POH7"></property>
+        <property name="POH8" column="POH8"></property>
+        <property name="POH9" column="POH9"></property>
+        <property name="POH10" column="POH10"></property>
+        <property name="POH11" column="POH11"></property>
+        <property name="POH12" column="POH12"></property>
+
+        <property name="PAB0" column="PAB0"></property>
+        <property name="PAB1" column="PAB1"></property>
+        <property name="PAB2" column="PAB2"></property>
+        <property name="PAB3" column="PAB3"></property>
+        <property name="PAB4" column="PAB4"></property>
+        <property name="PAB5" column="PAB5"></property>
+        <property name="PAB6" column="PAB6"></property>
+        <property name="PAB7" column="PAB7"></property>
+        <property name="PAB8" column="PAB8"></property>
+        <property name="PAB9" column="PAB9"></property>
+        <property name="PAB10" column="PAB10"></property>
+        <property name="PAB11" column="PAB11"></property>
+        <property name="PAB12" column="PAB12"></property>
+
+        <property name="NR0" column="NR0"></property>
+        <property name="NR1" column="NR1"></property>
+        <property name="NR2" column="NR2"></property>
+        <property name="NR3" column="NR3"></property>
+        <property name="NR4" column="NR4"></property>
+        <property name="NR5" column="NR5"></property>
+        <property name="NR6" column="NR6"></property>
+        <property name="NR7" column="NR7"></property>
+        <property name="NR8" column="NR8"></property>
+        <property name="NR9" column="NR9"></property>
+        <property name="NR10" column="NR10"></property>
+        <property name="NR11" column="NR11"></property>
+        <property name="NR12" column="NR12"></property>
+
+        <property name="PORcpt0" column="PORcpt0"></property>
+        <property name="PORcpt1" column="PORcpt1"></property>
+        <property name="PORcpt2" column="PORcpt2"></property>
+        <property name="PORcpt3" column="PORcpt3"></property>
+        <property name="PORcpt4" column="PORcpt4"></property>
+        <property name="PORcpt5" column="PORcpt5"></property>
+        <property name="PORcpt6" column="PORcpt6"></property>
+        <property name="PORcpt7" column="PORcpt7"></property>
+        <property name="PORcpt8" column="PORcpt8"></property>
+        <property name="PORcpt9" column="PORcpt9"></property>
+        <property name="PORcpt10" column="PORcpt10"></property>
+        <property name="PORcpt11" column="PORcpt11"></property>
+        <property name="PORcpt12" column="PORcpt12"></property>
+
+        <property name="POR0" column="POR0"></property>
+        <property name="POR1" column="POR1"></property>
+        <property name="POR2" column="POR2"></property>
+        <property name="POR3" column="POR3"></property>
+        <property name="POR4" column="POR4"></property>
+        <property name="POR5" column="POR5"></property>
+        <property name="POR6" column="POR6"></property>
+        <property name="POR7" column="POR7"></property>
+        <property name="POR8" column="POR8"></property>
+        <property name="POR9" column="POR9"></property>
+        <property name="POR10" column="POR10"></property>
+        <property name="POR11" column="POR11"></property>
+        <property name="POR12" column="POR12"></property>
+    </class>
+</hibernate-mapping>
+    
