@@ -19,6 +19,16 @@
         <property name="LSR" column="LSR"></property>
         <property name="LS" column="LS"></property>
         <property name="AL" column="AL"></property>
+        <map name="pastDueReleases" table="t_mrp_past_due_release" lazy="false">
+            <key column="mrp_id" not-null="true"/>
+            <map-key column="period" type="integer"/>
+            <element column="quantity" type="integer" not-null="true"/>
+        </map>
+        <map name="pastDueGrossRequirements" table="t_mrp_past_due_demand" lazy="false">
+            <key column="mrp_id" not-null="true"/>
+            <map-key column="period" type="integer"/>
+            <element column="quantity" type="integer" not-null="true"/>
+        </map>
 
         <property name="GR0" column="GR0"></property>
         <property name="GR1" column="GR1"></property>
@@ -119,4 +129,3 @@
         <property name="POR12" column="POR12"></property>
     </class>
 </hibernate-mapping>
-    

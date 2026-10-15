@@ -1,26 +1,32 @@
-$ErrorActionPreference = "Stop"
-
+param([switch]$Integration)
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 $root = Split-Path -Parent $PSScriptRoot
-Set-Location $root
 
-New-Item -ItemType Directory -Force -Path "out/test" | Out-Null
+function Invoke-Checked([string]$Tool, [string[]]$Arguments) {
+    & $Tool @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Tool failed with exit code $LASTEXITCODE"
+    }
+}
 
-$sourceFiles = Get-ChildItem -Recurse -Path "src" -Filter "*.java" | ForEach-Object { $_.FullName }
-javac -Xlint:unchecked -encoding UTF-8 -cp "src;web\WEB-INF\lib\*" -d "out\test" $sourceFiles
-
-$testSources = @(
-    "src\util\MrpPeriodCalculator.java",
-    "src\service\MrpCalculationService.java",
-    "test\util\MrpPeriodCalculatorTest.java",
-    "test\service\MrpCalculationServiceTest.java"
-)
-javac -encoding UTF-8 -cp "src" -d "out\test" $testSources
-java -cp "out\test" util.MrpPeriodCalculatorTest
-java -cp "out\test" service.MrpCalculationServiceTest
-
-$mvn = Get-Command mvn -ErrorAction SilentlyContinue
-if ($mvn) {
-    mvn -B -DskipTests package
-} else {
-    Write-Host "Maven not found; skipped Maven package verification."
+Push-Location $root
+try {
+    $maven = Get-Command mvn -ErrorAction Stop
+    $jar = Get-Command jar -ErrorAction Stop
+    $mavenArgs = @('-B', 'clean', 'verify')
+    if ($Integration) { $mavenArgs += '-Pintegration' }
+    Invoke-Checked $maven.Source $mavenArgs
+    $war = Join-Path 'target' 'mrp-1.0.0-SNAPSHOT.war'
+    $entries = & $jar.Source tf $war
+    if ($LASTEXITCODE -ne 0) { throw "Cannot inspect WAR: $LASTEXITCODE" }
+    foreach ($required in @('WEB-INF/classes/action/MRPAction.class', 'WEB-INF/classes/service/MrpRecalculationService.class', 'WEB-INF/classes/hibernate.cfg.xml', 'WEB-INF/classes/entity/MRP.hbm.xml', 'WEB-INF/classes/struts.xml', 'WEB-INF/web.xml')) {
+        if ($entries -notcontains $required) { throw "WAR is missing $required" }
+    }
+    foreach ($dependency in @('struts2-core-', 'hibernate-core-', 'mysql-connector-j-')) {
+        if (-not ($entries -match ('^WEB-INF/lib/' + $dependency))) { throw "WAR is missing runtime dependency $dependency" }
+    }
+    Write-Host 'Build, tests and WAR contract passed.'
+} finally {
+    Pop-Location
 }

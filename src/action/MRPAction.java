@@ -35,22 +35,12 @@ public class MRPAction extends ActionSupport {
     }
 
     public String domrp() {
-        String[] s = new String[]{};
-        String hql = "from MRP";
-        MRP_list = DBO.query(hql, s);
-        delete();
-        MRPUtils.MRP();
-        list();
+        MRP_list = MRPUtils.MRP();
         return SUCCESS;
     }
 
     public String delete() {
-        String[] s = new String[]{};
-        String hql = "from MRP";
-        MRP_list = DBO.query(hql, s);
-        for (MRP mrp : MRP_list) {
-            DBO.delete(mrp);
-        }
+        MRPUtils.clearResults();
         list();
         return SUCCESS;
     }

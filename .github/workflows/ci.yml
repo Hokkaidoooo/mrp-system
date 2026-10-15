@@ -19,6 +19,35 @@ jobs:
           java-version: "8"
           cache: maven
 
-      - name: Legacy compile and focused tests
+      - name: Build, focused tests and WAR contract
         shell: pwsh
         run: ./scripts/verify.ps1
+
+      - name: Verify failure exit codes in independent copies
+        run: python scripts/check_verify_failures.py
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci-only-password
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -pci-only-password"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: maven
+      - name: Real MySQL rollback, concurrency and isolated Tomcat
+        shell: pwsh
+        env:
+          MRP_TEST_MYSQL_URL: jdbc:mysql://127.0.0.1:3306/
+          MRP_TEST_MYSQL_USER: root
+          MRP_TEST_MYSQL_PASSWORD: ci-only-password
+        run: ./scripts/verify.ps1 -Integration

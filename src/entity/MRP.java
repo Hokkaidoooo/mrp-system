@@ -1,6 +1,14 @@
 package entity;
 
 public class MRP {
+    private java.util.Map<Integer, Integer> pastDueReleases = new java.util.TreeMap<Integer, Integer>();
+    private java.util.Map<Integer, Integer> pastDueGrossRequirements = new java.util.TreeMap<Integer, Integer>();
+
+    public java.util.Map<Integer, Integer> getPastDueReleases() { return pastDueReleases; }
+    public void setPastDueReleases(java.util.Map<Integer, Integer> values) { pastDueReleases = values; }
+    public java.util.Map<Integer, Integer> getPastDueGrossRequirements() { return pastDueGrossRequirements; }
+    public void setPastDueGrossRequirements(java.util.Map<Integer, Integer> values) { pastDueGrossRequirements = values; }
+
     private int id;
     private String P_No;
     private String OH;

@@ -5,3 +5,5 @@ target/
 web/WEB-INF/classes/
 *.class
 *.log
+.tools/
+.verification/

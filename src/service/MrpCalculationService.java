@@ -8,8 +8,6 @@ import entity.TPOP;
 import util.MrpPeriodCalculator;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,28 +17,23 @@ public class MrpCalculationService {
                                List<TPOP> tpopList,
                                List<Inventory> inventoryList,
                                List<ItemMaster> itemMasterList) {
-        List<ItemMaster> items = new ArrayList<ItemMaster>(safeList(itemMasterList));
-        Collections.sort(items, new Comparator<ItemMaster>() {
-            @Override
-            public int compare(ItemMaster left, ItemMaster right) {
-                return Integer.compare(left.getLLC(), right.getLLC());
-            }
-        });
-
+        BomGraph graph = new BomGraph(itemMasterList, bomList);
         Map<String, TPOP> tpopByPart = indexTpopByPart(tpopList);
         Map<String, Inventory> inventoryByPart = indexInventoryByPart(inventoryList);
-        Map<String, MRP> mrpByPart = new HashMap<String, MRP>();
+        validateInputs(graph, tpopByPart, inventoryByPart);
+        Map<String, MrpPeriodCalculator.Result> plans = new HashMap<String, MrpPeriodCalculator.Result>();
         List<MRP> results = new ArrayList<MRP>();
 
-        for (ItemMaster item : items) {
-            if (item.getLLC() == 0) {
+        for (ItemMaster item : graph.order) {
+            if (graph.incoming.get(item.getP_No()).isEmpty()) {
                 continue;
             }
 
             Inventory inventory = inventoryByPart.get(item.getP_No());
             MRP mrp = createBaseResult(item, inventory);
+            Map<Integer, Integer> pastDueDemand = new java.util.TreeMap<Integer, Integer>();
             int[] grossRequirements = calculateGrossRequirements(
-                    item.getP_No(), bomList, tpopByPart, mrpByPart);
+                    graph.incoming.get(item.getP_No()), tpopByPart, plans, pastDueDemand);
             int[] scheduledReceipts = scheduledReceipts(inventory);
 
             MrpPeriodCalculator.Result calculation = MrpPeriodCalculator.calculate(
@@ -55,8 +48,9 @@ public class MrpCalculationService {
                     scheduledReceipts);
 
             applyCalculation(mrp, calculation);
+            mrp.setPastDueGrossRequirements(pastDueDemand);
             results.add(mrp);
-            mrpByPart.put(mrp.getP_No(), mrp);
+            plans.put(mrp.getP_No(), calculation);
         }
 
         return results;
@@ -70,29 +64,31 @@ public class MrpCalculationService {
         mrp.setSS(item.getSS());
         mrp.setLSR(item.getLSR());
         mrp.setLS(item.getLS());
-        mrp.setOH(inventory == null ? "0" : defaultQuantity(inventory.getOH()));
-        mrp.setAL(inventory == null ? "0" : defaultQuantity(inventory.getAL()));
+        mrp.setOH(inventory.getOH());
+        mrp.setAL(inventory.getAL());
         return mrp;
     }
 
-    private int[] calculateGrossRequirements(String partNo,
-                                             List<BOM> bomList,
+    private int[] calculateGrossRequirements(List<BOM> incoming,
                                              Map<String, TPOP> tpopByPart,
-                                             Map<String, MRP> mrpByPart) {
+                                             Map<String, MrpPeriodCalculator.Result> plans,
+                                             Map<Integer, Integer> pastDueDemand) {
         int[] grossRequirements = new int[MrpPeriodCalculator.PERIODS];
-        for (BOM bom : safeList(bomList)) {
-            if (!partNo.equals(bom.getComp())) {
-                continue;
-            }
-
+        for (BOM bom : incoming) {
             TPOP parentTpop = tpopByPart.get(bom.getParent());
             if (parentTpop != null) {
                 addDemand(grossRequirements, plannedOrderReleases(parentTpop), bom.getQ_P());
+                continue;
             }
-
-            MRP parentMrp = mrpByPart.get(bom.getParent());
-            if (parentMrp != null) {
-                addDemand(grossRequirements, plannedOrderReleases(parentMrp), bom.getQ_P());
+            MrpPeriodCalculator.Result parent = plans.get(bom.getParent());
+            if (parent == null) throw new IllegalStateException("Parent was not calculated: " + bom.getParent());
+            addDemand(grossRequirements, parent.plannedOrderReleases, bom.getQ_P());
+            for (Map.Entry<Integer, Integer> release : parent.pastDueReleases.entrySet()) {
+                int quantity = Math.multiplyExact(release.getValue(), bom.getQ_P());
+                Integer previous = pastDueDemand.get(release.getKey());
+                pastDueDemand.put(release.getKey(), Math.addExact(previous == null ? 0 : previous, quantity));
+                // 逾期需求纳入期初待处理量，同时单独保留原始期段，不能遗失或冒充按时满足。
+                grossRequirements[0] = Math.addExact(grossRequirements[0], quantity);
             }
         }
         return grossRequirements;
@@ -100,42 +96,62 @@ public class MrpCalculationService {
 
     private void addDemand(int[] target, int[] parentReleases, int quantityPer) {
         for (int i = 0; i < MrpPeriodCalculator.PERIODS; i++) {
-            target[i] += parentReleases[i] * quantityPer;
+            if (parentReleases[i] < 0) throw new IllegalArgumentException("TPOP release must be non-negative");
+            target[i] = Math.addExact(target[i], Math.multiplyExact(parentReleases[i], quantityPer));
         }
     }
 
     private Map<String, TPOP> indexTpopByPart(List<TPOP> tpopList) {
         Map<String, TPOP> result = new HashMap<String, TPOP>();
-        for (TPOP tpop : safeList(tpopList)) {
-            result.put(tpop.getP_No(), tpop);
+        if (tpopList == null) throw new IllegalArgumentException("TPOP list is required");
+        for (TPOP tpop : tpopList) {
+            if (tpop == null) throw new IllegalArgumentException("Null TPOP row");
+            if (result.put(BomGraph.requirePart(tpop.getP_No()), tpop) != null) {
+                throw new IllegalArgumentException("Duplicate TPOP: " + tpop.getP_No());
+            }
         }
         return result;
     }
 
     private Map<String, Inventory> indexInventoryByPart(List<Inventory> inventoryList) {
         Map<String, Inventory> result = new HashMap<String, Inventory>();
-        for (Inventory inventory : safeList(inventoryList)) {
-            result.put(inventory.getP_No(), inventory);
+        if (inventoryList == null) throw new IllegalArgumentException("Inventory list is required");
+        for (Inventory inventory : inventoryList) {
+            if (inventory == null) throw new IllegalArgumentException("Null inventory row");
+            if (result.put(BomGraph.requirePart(inventory.getP_No()), inventory) != null) {
+                throw new IllegalArgumentException("Duplicate inventory: " + inventory.getP_No());
+            }
         }
         return result;
     }
 
-    private <T> List<T> safeList(List<T> values) {
-        return values == null ? Collections.<T>emptyList() : values;
-    }
-
-    private String defaultQuantity(String value) {
-        return value == null || value.trim().isEmpty() ? "0" : value.trim();
-    }
-
     private int parseQuantity(String value) {
-        return value == null || value.trim().isEmpty() ? 0 : Integer.parseInt(value.trim());
+        if (value == null || value.trim().isEmpty()) throw new IllegalArgumentException("Inventory quantity is required");
+        return Integer.parseInt(value.trim());
+    }
+
+    private void validateInputs(BomGraph graph, Map<String, TPOP> tpop, Map<String, Inventory> inventory) {
+        for (String part : tpop.keySet()) {
+            if (!graph.items.containsKey(part) || !graph.incoming.get(part).isEmpty()) {
+                throw new IllegalArgumentException("TPOP must reference a BOM root: " + part);
+            }
+            for (int quantity : plannedOrderReleases(tpop.get(part))) {
+                if (quantity < 0) throw new IllegalArgumentException("TPOP release must be non-negative: " + part);
+            }
+        }
+        for (String part : inventory.keySet()) {
+            if (!graph.items.containsKey(part)) throw new IllegalArgumentException("Inventory references unknown item: " + part);
+        }
+        for (String part : graph.items.keySet()) {
+            if (graph.incoming.get(part).isEmpty()) {
+                if (!tpop.containsKey(part)) throw new IllegalArgumentException("Missing root TPOP: " + part);
+            } else if (!inventory.containsKey(part)) {
+                throw new IllegalArgumentException("Missing inventory: " + part);
+            }
+        }
     }
 
     private int[] scheduledReceipts(Inventory inventory) {
-        if (inventory == null) {
-            return new int[MrpPeriodCalculator.PERIODS];
-        }
         return new int[]{
                 inventory.getOO0(), inventory.getOO1(), inventory.getOO2(),
                 inventory.getOO3(), inventory.getOO4(), inventory.getOO5(),
@@ -155,16 +171,6 @@ public class MrpCalculationService {
         };
     }
 
-    private int[] plannedOrderReleases(MRP mrp) {
-        return new int[]{
-                mrp.getPOR0(), mrp.getPOR1(), mrp.getPOR2(),
-                mrp.getPOR3(), mrp.getPOR4(), mrp.getPOR5(),
-                mrp.getPOR6(), mrp.getPOR7(), mrp.getPOR8(),
-                mrp.getPOR9(), mrp.getPOR10(), mrp.getPOR11(),
-                mrp.getPOR12()
-        };
-    }
-
     private void applyCalculation(MRP mrp, MrpPeriodCalculator.Result result) {
         setGrossRequirements(mrp, result.grossRequirements);
         setScheduledReceipts(mrp, result.scheduledReceipts);
@@ -173,6 +179,7 @@ public class MrpCalculationService {
         setNetRequirements(mrp, result.netRequirements);
         setPlannedOrderReceipts(mrp, result.plannedOrderReceipts);
         setPlannedOrderReleases(mrp, result.plannedOrderReleases);
+        mrp.setPastDueReleases(new java.util.TreeMap<Integer, Integer>(result.pastDueReleases));
     }
 
     private void setGrossRequirements(MRP mrp, int[] values) {

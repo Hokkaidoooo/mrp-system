@@ -9,6 +9,7 @@
             variables or JVM system properties. See hibernate.properties.example.
         -->
         <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.connection.isolation">4</property>
 
         <mapping resource="entity/BOM.hbm.xml"></mapping>
         <mapping resource="entity/Inventory.hbm.xml"></mapping>

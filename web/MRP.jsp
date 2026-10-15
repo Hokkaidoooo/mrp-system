@@ -27,7 +27,12 @@
         </div>
     </div>
 <s:iterator value="MRP_list">
-    <div class="panel panel-default">
+    <div class="panel panel-default" data-mrp-part="<s:property value='P_No'/>">
+        <div class="panel-body">
+            <p>期外下达量：<s:property value="pastDueReleases"/></p>
+            <p>原始逾期期段与毛需求：<s:property value="pastDueGrossRequirements"/></p>
+            <p>负期段表示计划起点以前应下达；逾期毛需求纳入第 0 槽，在第 1 期统一结算。</p>
+        </div>
 
         <table class="table table-bordered table-hover">
             <tr>
