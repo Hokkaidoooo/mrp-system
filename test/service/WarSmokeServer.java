@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 /** 独立 JVM 仅加载容器依赖，避免测试类路径替 WAR 补齐缺失依赖。 */
 public final class WarSmokeServer {
@@ -18,7 +19,9 @@ public final class WarSmokeServer {
         tomcat.addWebapp("/mrp", Paths.get(args[1]).toAbsolutePath().toString());
         try {
             tomcat.start();
-            Files.write(base.resolve("ready.txt"), String.valueOf(tomcat.getConnector().getLocalPort()).getBytes(StandardCharsets.UTF_8));
+            Path pending = base.resolve("ready.pending");
+            Files.write(pending, String.valueOf(tomcat.getConnector().getLocalPort()).getBytes(StandardCharsets.UTF_8));
+            Files.move(pending, base.resolve("ready.txt"), StandardCopyOption.ATOMIC_MOVE);
             while (System.in.read() != -1) { }
         } finally {
             tomcat.stop(); tomcat.destroy();
