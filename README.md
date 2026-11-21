@@ -2,6 +2,8 @@
 
 # MRP 物料需求计划系统
 
+**简体中文** · [English](README.en.md) · [Español](README.es.md) · [日本語](README.ja.md)
+
 基于 Java 8、Struts2 和 Hibernate 的物料需求计划系统。维护物料、BOM 与库存，输入顶层物料的分期计划下达量，按 BOM 拓扑顺序展开需求，使用 0～12 共 13 个期段槽保存需求、预计库存与计划订单，并单独保留负期段的下达量和原始逾期需求。
 
 计算逻辑与数据库访问分开，适合阅读多层 BOM 的需求传递，并用不依赖数据库的计算测试核对规则。页面使用 JSP 与 Bootstrap，数据库使用 MySQL。
